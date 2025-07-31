@@ -7,4 +7,5 @@
 디렉토리 별 목차  
 /JEUS  
 datasource-dbpasswd-online-change.md : JEUS 데이터소스 DB 패스워드 암호 온라인 변경(2025/07/30 업데이트)  
+serveral-ojdbc-driver.md : JEUS에 컨테이너 별 OJDBC 설정(2025/07/31 업데이트)  
 
