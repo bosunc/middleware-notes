@@ -1,0 +1,14 @@
+org.postgresql.util.PSQLException: Cannot commit when autoCommit is enabled. 왜 이런 오류가 발생하는지? 해결하는 방법은?
+
+원인
+PostgreSQL JDBC 드라이버가 자동 커밋(autoCommit) 모드인 상태에서 commit()을 호출했기 때문
+JDBC드라이버에서는 자동으로 커밋하게 설정되었는데 소스에서 설정된 commit()이 추가적으로 호출이 되었기에 불필요한 함수라고 생각되어 오류를 발생시킴.
+(실제로 오류가 발생하지는 않고 commit까지 잘 수행됨.)
+
+“이미 autoCommit 모드인데 수동 commit을 요청했네? 논리적으로 모순이야.”
+그래서 Cannot commit when autoCommit is enabled 예외를 던지게 된다.
+
+
+해결방법?
+방법 1. 트랜잭션을 직접 제어하려면 autoCommit을 끌것.
+방법 2. autoCommit 모드 그대로 쓸 거라면 commit() 호출을 제거할것.
