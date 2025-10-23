@@ -1,0 +1,152 @@
+🧠 1️⃣ Boolean (참/거짓) → 질문형 이름
+
+“Yes or No로 대답할 수 있는 이름”
+읽을 때 “if (이게 참이면~)”이 자연스럽게 들려요.
+
+prefix	의미	예시	읽는 식
+is	상태 확인	isReady, isActive, isEmpty, isConnected	“~인가?”
+has	소유/존재 여부	hasData, hasError, hasPermission	“~을 가지고 있나?”
+can	가능 여부	canRetry, canExecute, canSave	“~할 수 있나?”
+should	조건적 필요 여부	shouldRetry, shouldExit	“~해야 하나?”
+need	요구 여부	needUpdate, needReload	“~이 필요한가?”
+was	과거 상태	wasLoaded, wasSuccessful	“~이었나?”
+
+📌 이렇게 하면 if (isReady && hasData) 가
+그냥 영문 문장처럼 자연스럽게 읽혀요.
+
+⚙️ 2️⃣ 동작(액션) 함수는 동사 + 목적어 구조
+
+“무엇을 한다”를 표현하는 ‘동사 + 대상’ 패턴
+
+동사	의미	예시
+get	가져온다	getUser(), getData(), getConfig()
+set	설정한다	setUser(), setTimeout(), setVolume()
+load	외부에서 읽는다	loadFile(), loadSettings()
+save	저장한다	saveData(), saveToDB()
+update	갱신한다	updateProfile(), updateStatus()
+create	새로 만든다	createUser(), createOrder()
+delete	삭제한다	deleteFile(), deleteAccount()
+remove	제거한다 (논리적 삭제)	removeItem(), removeNode()
+add	추가한다	addUser(), addItem()
+init / initialize	초기화	initServer(), initializeCache()
+check	검사한다	checkAuth(), checkStatus()
+validate	유효성 검사	validateInput(), validateUser()
+execute / run	실행	executeQuery(), runTask()
+handle	처리 (콜백용)	handleRequest(), handleError()
+
+📌 숙련자들은 거의 “함수 이름 보면 행동이 눈에 보이게” 짓습니다.
+예: loadUserConfig() → “사용자 설정을 불러오는 함수구나”
+이름만 봐도 기능이 바로 감 옵니다.
+
+💾 3️⃣ 데이터 관련 변수 패턴
+패턴	의미	예시
+data	단순 데이터	userData, configData
+list / array	여러 개의 데이터	userList, fileArray, itemList
+map / dict	key-value 형태	userMap, configDict
+count	개수	userCount, retryCount
+size	용량, 크기	bufferSize, listSize
+idx / index	위치	userIdx, itemIndex
+ptr	포인터 변수	userPtr, bufPtr
+ref	참조 변수	userRef, objRef
+flag	상태 표시용 변수	errorFlag, debugFlag
+
+📌 예:
+if (errorFlag) → “에러 상태면”
+for (int i = 0; i < userCount; i++) → “유저 개수만큼 반복”
+
+🧩 4️⃣ 시간/날짜 관련 네이밍
+이름	의미
+createdAt, updatedAt, deletedAt	DB에서 거의 표준 필드명
+startTime, endTime	시작/종료 시간
+timestamp, timeMs, timeSec	시간 단위 명시
+lastModified, lastUpdated	마지막 수정 시점
+
+📌 createdAt, updatedAt은 전 세계적으로 공통이에요.
+심지어 SQL, NoSQL, Python, Java, C++ 어디서든 거의 다 통일되어 있음.
+
+🔁 5️⃣ 상태(State) 표현할 때 자주 쓰는 접두어
+접두어	의미	예시
+prev	이전 값	prevState, prevCount, prevTime
+next	다음 값	nextNode, nextIndex
+cur / current	현재 값	curPos, currentUser
+old / new	변경 전후 비교	oldValue, newValue
+
+📌 if (curValue != prevValue) → “현재 값이 이전 값이랑 다르면”
+
+⚙️ 6️⃣ 에러나 결과 관련 변수 패턴
+변수명	의미	비유
+ret / result	반환 결과	함수 끝나고 return 전 저장
+status	성공/실패 상태	보통 int나 enum
+rc	return code	C 전통 (rc = 0이면 OK)
+err, errMsg	오류 정보	문자열 메시지용
+code	상태 코드	HTTP, API 응답 등
+ok	단순 성공 여부	if (!ok) return false;
+📦 7️⃣ 이벤트나 콜백 함수 이름
+
+이벤트 기반 시스템, GUI, 서버 콜백 함수 등에서 자주 쓰는 형태
+
+접두어	의미	예시
+on	어떤 일이 “일어났을 때”	onClick(), onError(), onLoad()
+before / after	이벤트 전후 처리	beforeSave(), afterUpdate()
+handle	이벤트 처리	handleRequest(), handleError()
+emit / trigger	이벤트 발생	emitEvent(), triggerAlarm()
+
+📌 on은 “발생시”, handle은 “처리시”, emit은 “발동시킨다”.
+
+💡 8️⃣ 파일, 경로, 문자열 관련 네이밍
+이름	의미
+filePath, fileName, dirPath	파일 경로 관련
+buf / buffer	임시 저장공간
+str, msg, text, body	문자열
+input, output, inBuf, outBuf	입출력 구분
+key, value, pair	맵형 데이터
+
+예:
+
+std::string inputFilePath;
+char inBuf[1024];
+
+⚙️ 9️⃣ 상태값이나 모드 관련 이름
+이름	의미
+mode, state, status	동작 상태
+enabled, disabled	기능 on/off
+active, inactive	활성/비활성
+locked, unlocked	잠금 상태
+visible, hidden	표시 여부
+
+📌 예:
+if (!enabled) return; → “비활성 상태면 아무것도 안 함”
+
+🧭 10️⃣ 시간이 지나면 자동으로 쓰게 되는 미묘한 습관들
+습관	이유
+변수명에 num 대신 count	userCount가 더 자연스러움
+“init” → “initialize”	팀 코드베이스 톤에 맞춰 자동화
+“obj”, “ctx”, “env” 같은 약자	context, environment의 약칭, 전통적으로 사용
+“req” / “res”	request / response 약어 (거의 표준)
+“cfg”	config (설정) 약어
+“svc”	service 약어
+“mgr”	manager 약어
+“util”	utility (공통함수 모음)
+“impl”	implementation (구현 클래스)
+
+예:
+
+UserSvcImpl userSvc; // Service 구현체
+ReqContext* reqCtx;  // 요청 컨텍스트
+AppConfig cfg;       // 설정값
+
+✨ 마무리 요약
+패턴 종류	대표 예시	읽는 감각
+상태 확인	isReady, hasData, canRetry	“~인가?”, “~있나?”, “~가능한가?”
+행동	getUser, loadConfig, saveFile	“무엇을 한다”
+시간	createdAt, updatedAt	“언제?”
+데이터	userList, configMap, itemCount	“무엇을 담고 있나”
+이벤트	onClick, handleError, emitSignal	“어떤 일이 일어났을 때”
+상태값	enabled, locked, active	“현재 상태”
+약어	req, res, cfg, svc, mgr, impl	“짧게 하지만 의미 보존”
+
+💬 한줄 요약
+
+숙련 개발자는 “코드 이름을 읽었을 때 문장처럼 들리게” 짓습니다.
+if (isConnected && hasPermission) loadUserData();
+읽으면 영어 문장처럼 자연스럽죠? 👀
