@@ -1,0 +1,207 @@
+🧱 1️⃣ DBA (Database Administrator)의 암묵적 습관
+
+🔍 “DBA는 ‘쿼리’보다 ‘리스크’를 먼저 본다.”
+
+💡 SQL 실행 전엔 “Explain Plan”부터 본다
+
+바로 실행하지 않고
+
+EXPLAIN PLAN FOR ...  
+SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
+
+
+먼저 돌려본다.
+
+습관적으로 쿼리 실행 계획부터 보는 사람 → 진짜 DBA.
+
+💡 TRUNCATE, DELETE, DROP은 절대 Enter 두 번 안 누름
+
+명령어 입력 후 WHERE나 SCHEMA 다시 확인
+
+진짜 수행 전 한 번 더 복사해서 눈으로 검증
+
+DELETE FROM orders WHERE order_id = 123; -- OK
+DELETE FROM orders; -- 😨 뭔가 이상하면 바로 중단
+
+
+DBA들은 실수의 90%가 “WHERE 빠진 DELETE”란 걸 알고 있음 😂
+
+💡 DDL은 실서버에서 직접 안 침
+
+개발계, 검증계에서 실행 후 스크립트 정리해서 전달
+
+“직접 ALTER TABLE 치면 안 된다”가 거의 종교 수준의 규칙.
+
+💡 날짜, 인덱스, 파티션 → 자동으로 체크
+
+쿼리 보면 본능적으로 “이거 인덱스 타겠네 / 안 타겠네” 느낌 옴.
+
+WHERE에 TO_CHAR(date, 'YYYYMMDD') 쓰면 바로 눈썹 찡그림 😂
+
+대용량 테이블 보면 “파티션 나눴나?”가 먼저 떠오름.
+
+💡 쿼리 성능보다 “Redo/Undo 영향” 먼저 떠올림
+
+개발자는 “쿼리 속도”를 보지만
+
+DBA는 “Redo, Undo, Temp 사용량”을 떠올림.
+→ 즉, “이거 돌리면 로그 얼마나 쌓일까?”부터 계산.
+
+💡 “백업 없으면 절대 손 안 댐”
+
+진짜 오래된 DBA는
+→ 작업 전 “RMAN 백업 완료?”
+→ “아카이브 로그 공간 충분?”
+이거 확인 안 되면 작업 절대 안 함.
+
+🧭 2️⃣ 서버 엔지니어의 암묵적 습관
+
+⚙️ “서버 엔지니어는 시스템을 ‘만지는 게 아니라 듣는 사람’이다.”
+
+💡 커맨드 칠 때 ‘rm -rf’엔 거의 손이 떨림
+
+오래된 서버 엔지니어ほど rm -rf는 손이 진짜 느려짐.
+보통 이렇게 함:
+
+ls -ld /target/path/
+echo /target/path/
+rm -rf /target/path/
+
+
+세 번 확인 후 Enter.
+
+💡 df, top, ps, netstat는 반사적으로 침
+
+SSH 접속하면 무의식적으로:
+
+df -h
+top -n 1
+ps -ef | grep java
+
+
+→ CPU, Memory, Disk Space 확인이 손에 붙어 있음.
+
+💡 “변경 이력 파일” 자동 작성 버릇
+
+/root/change_YYYYMMDD.log
+
+vim /home/admin/change.log
+→ 뭘 수정하든 “무조건” 로그 남김. (나중에 문제 생기면 그게 생명줄)
+
+💡 로그 tail -f는 손에 박혀 있음
+
+장애 감지보다 먼저:
+
+tail -f /var/log/messages
+tail -f catalina.out
+
+
+켜놓고 감으로 반응함.
+“느낌이 이상하면” 이미 CPU spike 터지기 직전 😂
+
+💡 서비스 재기동할 때 “netstat로 포트 오픈” 확인
+
+단순히 service start만 안 치고,
+
+netstat -an | grep 8080
+
+
+으로 포트 LISTEN 상태 확인하는 게 몸에 밴다.
+
+💡 “vi 안 닫고, 새 창 열어서 비교”
+
+수정 전후 diff 비교 습관.
+
+“원본 백업”은 자동 반사:
+
+cp config.xml config.xml.bak
+
+💡 “재부팅은 최후의 수단”
+
+서버 엔지니어는 reboot를 “무능의 상징”처럼 여김 😂
+대신 서비스 단위로 재시작 (systemctl restart app.service)
+또는 캐시, 세션만 클리어.
+
+🔧 3️⃣ 미들웨어 엔지니어의 암묵적 습관
+
+☕ “미들웨어 엔지니어는 서버보다 로그를 더 믿는다.”
+
+💡 로그 위치를 외움
+
+WebLogic이면 /domains/.../servers/.../logs/
+
+JEUS면 $JEUS_HOME/domains/.../logs
+
+Tuxedo면 ULOG.YYYYMMDD
+→ 로그 위치랑 grep 패턴이 머릿속에 자동 저장돼 있음.
+
+💡 “접속 안 될 때는 3단계로 자동 점검”
+
+포트 열렸나?
+→ telnet host port
+
+프로세스 떴나?
+→ ps -ef | grep weblogic
+
+로그에 에러났나?
+→ tail -f ...log | grep -i error
+
+👀 이거는 몸이 먼저 반응함. (머리보다 손이 빠름)
+
+💡 “스레드, 커넥션풀, JVM 메모리”는 거의 반사적으로 grep
+grep "STUCK" weblogic.log
+grep "Connection" ULOG.*
+grep "GC" stdout.log
+
+
+→ 문제 생기면 “응답이 느리다” = “스레드 걸림 or 풀 고갈”이란 걸 이미 알고 있음.
+
+💡 설정 바꾸기 전엔 ‘재기동 없이 적용되는지’ 먼저 생각
+
+“이건 reload 가능?”
+
+“runtime MBean 적용인가 static config인가?”
+→ JEUS, WebLogic, Tuxedo 다 써본 사람은 이거 본능적으로 구분함.
+
+💡 재기동할 땐 무조건 로그 tail 걸고 눈으로 봄
+nohup startServer.sh &
+tail -f stdout.log
+
+
+“Server started in RUNNING mode” 문장 나올 때까지 절대 창 닫지 않음.
+
+💡 “서버 간 연결 테스트는 무조건 nc/telnet으로”
+
+WAS ↔ Tuxedo ↔ DB ↔ FTP 연동할 때,
+무조건 먼저 포트 테스트:
+
+nc -zv host port
+telnet host port
+
+💡 “JVM 튜닝보다 GC 로그를 먼저 본다”
+
+“Full GC가 몇 초마다 뜨나”
+
+-XX:+PrintGCDetails -Xloggc:gc.log
+이런 옵션이 몸에 붙어 있음.
+GC 로그 보면 어디서 튜닝해야 할지 감이 바로 옴.
+
+🧠 4️⃣ 공통 습관 — 세 직군이 모두 공유하는 것
+습관	이유
+명령 내리기 전에 한 번 더 읽는다	명령은 되돌릴 수 없기 때문
+작업 전후 로그 남긴다	나중에 “내가 했냐?” 소명용 😅
+시스템 건드리기 전 스냅샷/백업	복구용
+장애나 경고 로그를 보면 “원인 3가지”를 즉시 머릿속으로 가정	경험 기반 추론
+재부팅, 서비스 중단은 마지막 카드	운영 중단은 치명적
+grep, tail, diff, wc, awk, sed	손가락이 자동으로 침
+작업 후 꼭 2~3분 로그 tail 하면서 확인	성공 메시지보다 “에러 안 나는지”를 본다
+📘 마무리 요약
+직군	대표적인 암묵적 습관
+DBA	Explain Plan 먼저, WHERE 확인, 백업 필수
+서버 엔지니어	df/top/netstat 자동, rm -rf 두 번 확인, reboot 최소화
+미들웨어 엔지니어	로그 위치 암기, 포트 테스트, GC/스레드 로그 grep
+
+💬 요약 한 줄
+
+개발자는 “코드”로 문제를 푼다면,
+DBA/서버/미들웨어 엔지니어는 “로그와 감”으로 문제를 찾는다.
