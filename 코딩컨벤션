@@ -1,0 +1,9 @@
+코딩 컨벤션(convention)
+
+보통 C++/Java/C# 같은 객체지향 언어에서는 이렇게 씀
+
+구분	예시	설명
+클래스 이름	Ant, Request, Response, UserManager	대문자로 시작 (PascalCase)
+변수 이름	ant, request, response, userManager	소문자로 시작 (camelCase)
+함수 이름	onInit, perform, getData	보통 소문자로 시작
+상수 이름	MAX_COUNT, PI	전부 대문자 (Snake Case)
